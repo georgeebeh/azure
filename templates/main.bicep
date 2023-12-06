@@ -1,8 +1,22 @@
+param location string = 'westus3'
+param storageAccountName string = 'ebehlaunch${uniqueString(resourceGroup().id)}'
+param appServiceAppName string = 'ebehlaunch${uniqueString(resourceGroup().id)}'
+
+@allowed([
+  'nonprod'
+  'prod'
+])
+param environmentType string
+
+
+var storageAccountSkuName = (environmentType == 'prod') ? 'Standard_GRS' : 'Standard_LRS'
+
+
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
-  name: 'ebehlaunchstorage'
-  location: 'eastus'
+  name: storageAccountName
+  location: location
   sku: {
-    name: 'Standard_LRS'
+    name: storageAccountSkuName
   }
   kind: 'StorageV2'
   properties: {
@@ -10,20 +24,14 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   }
 }
 
-resource appServicePlan 'Microsoft.Web/serverFarms@2022-03-01' = {
-  name: 'ebehlaunchplan'
-  location: 'eastus'
-  sku: {
-    name: 'F1'
+module appService 'modules/appService.bicep' = {
+  name: 'appService'
+  params: {
+    location: location 
+    appServiceAppName: appServiceAppName 
+    environmentType: environmentType
   }
 }
 
-resource appServiceApp 'Microsoft.Web/sites@2022-03-01' = {
-  name: 'ebehlaunchapp'
-  location: 'eastus'
-  properties: {
-    serverFarmId: appServicePlan.id
-    httpsOnly: true 
-  }
-}
 
+output appServiceAppHostName string = appService.outputs.appServiceAppHostName
