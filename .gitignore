@@ -1,0 +1,16 @@
+*.terraform
+*.tfstate
+*.tfstate.backup
+*.tfvars
+*.tfplan
+*.tfplan.*
+.terraformrc
+.terraform/
+.terraform-version
+*.zip
+*.tar.gz
+*.tgz
+*.tar
+*.tgz
+*.tar.xz
+*.dev.*
