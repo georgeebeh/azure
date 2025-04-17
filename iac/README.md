@@ -1,0 +1,1 @@
+## Terraform Code that deploys a resource group, vm and all the associated networking 
